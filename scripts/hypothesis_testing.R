@@ -59,3 +59,46 @@ biomarker_test_il_18 # H1 p-value 0.25
 # 9. Biomarker CSF-1
 biomarker_test_csf_1 <- t.test(csf_1 ~ sex, biomarker)
 biomarker_test_csf_1 # H1 p-value 0.01
+
+# Bonferroni Correction ------------------------------------------------------
+
+# The probability of making a Type I error is 0.05 across all 9 t-tests, lowering 
+# the p-value necessary to reach significance for each individual test to 0.006.
+
+# 1. Biomarker IL-8
+biomarker_test_il_8_corr <- t.test(il_8 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_il_8_corr
+
+# 2. Biomarker VEGF-A
+biomarker_test_vegf_a_corr <- t.test(vegf_a ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_vegf_a_corr
+
+# 3. Biomarker OPG
+biomarker_test_opg_corr <- t.test(opg ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_opg_corr 
+
+# 4. Biomarker TGF-beta-1
+biomarker_test_tgf_beta_1_corr <- t.test(tgf_beta_1 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_tgf_beta_1_corr 
+
+# 5. Biomarker IL-6
+biomarker_test_il_6_corr <- t.test(il_6 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_il_6_corr
+
+# 6. Biomarker CXCL9
+biomarker_test_cxcl9_corr <- t.test(cxcl9 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_cxcl9_corr 
+
+# 7. Biomarker CXCL1
+biomarker_test_cxcl1_corr <- t.test(cxcl1 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_cxcl1_corr 
+
+# 8. Biomarker IL-18
+biomarker_test_il_18_corr <- t.test(il_18 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_il_18_corr 
+
+# 9. Biomarker CSF-1
+biomarker_test_csf_1_corr <- t.test(csf_1 ~ sex, biomarker, conf.level = 0.994)
+biomarker_test_csf_1_corr 
+
+# None of the tests are significant
