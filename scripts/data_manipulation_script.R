@@ -1,8 +1,6 @@
 # Probability and Statistics
 # Final Assessment: Data Manipulation Script
 
-
-
 # Load packages -----------------------------------------------------------
 library(readxl) # for reading excel files
 library(dplyr) # for pipe operators and manipulating data frames
@@ -75,3 +73,4 @@ sprintf("The number of patients in the clean dataset is %s.", n_patients3)
 
 # Save data ---------------------------------------------------------------
 write.csv(full_dataset_clean, "data/biomarkers_covariates_clean.csv")
+
