@@ -5,6 +5,7 @@
 library(readxl) # for reading excel files
 library(dplyr) # for pipe operators and manipulating data frames
 library(tidyr) # for manipulating data frames, separate_wider_delim()
+library(janitor) # for cleaning column names
 
 
 # Load data ---------------------------------------------------------------
@@ -61,15 +62,26 @@ full_dataset_clean <- full_dataset %>%
   rename("Sex" = "Sex (1=male, 2=female)",
          "Smoker" = "Smoker (1=yes, 2=no)",
          "VAS-0" = "VAS-at-inclusion",
-         "VAS-12" = "Vas-12months")
+         "VAS-12" = "Vas-12months") %>%
+  
+  # Clean all column names with the janitor package
+  clean_names()
 
 
 # Check that the number of patients in the clean dataset is the same
-n_patients3 <- length(unique(full_dataset_clean$PatientID))
+n_patients3 <- length(unique(full_dataset_clean$patient_id))
 sprintf("The number of patients in the clean dataset is %s.", n_patients3)
 
 # 1 patient is missing data for inclusion.
 
+# Check for NAs
+nas <- sum(is.na(full_dataset_clean))
+sprintf("There are %s NAs in full_dataset_clean.", nas)
+
+# Find the NAs
+colSums(is.na(full_dataset_clean))
+
+# There are 2 missing values in VAS after 12 months.
 
 # Save data ---------------------------------------------------------------
 write.csv(full_dataset_clean, "data/biomarkers_covariates_clean.csv")
