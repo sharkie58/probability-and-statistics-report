@@ -79,9 +79,7 @@ nas <- sum(is.na(full_dataset_clean))
 sprintf("There are %s NAs in full_dataset_clean.", nas)
 
 # Find the NAs
-colSums(is.na(full_dataset_clean))
-
-# There are 2 missing values in VAS after 12 months.
+colSums(is.na(full_dataset_clean)) # 2 missing values in VAS after 12 months.
 
 # Save data ---------------------------------------------------------------
 write.csv(full_dataset_clean, "data/biomarkers_covariates_clean.csv")
