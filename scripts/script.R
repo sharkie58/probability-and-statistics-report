@@ -19,7 +19,7 @@ biomarkers
 covariates
 
 
-# Connect biomarkers with covariates --------------------------------------
+# Connect biomarkers with covariates datasets -----------------------------
 
 # Separate the column "Biomarkers" to two columns "PatientID" and "Time"
 biomarkers_id <- separate_wider_delim(biomarkers, 
@@ -45,15 +45,10 @@ full_dataset <- left_join(biomarkers_id, covariates, by = "PatientID")
 summary(full_dataset)
 
 
+# Prepare data for Statistical Analysis and Regression Modelling ----------
 
-# Prepare data for Part 1: Statistical Analysis ---------------------------
-
-# Question: Do the levels at inclusion vary between males and females?
-
-# Create a clean dataset with a set of the relevant variables at inclusion
-inclusion <- full_dataset %>%
-  # Select relevant columns
-  select(`PatientID`:`CSF-1`, `Sex (1=male, 2=female)`) %>%
+# Create a clean dataset of biomarkers at inclusion and all covariates
+full_dataset_clean <- full_dataset %>%
   
   # Limit Time to only at inclusion
   filter(Time == "0weeks") %>%
@@ -64,14 +59,19 @@ inclusion <- full_dataset %>%
   # Reorder the dataset by PatientID
   arrange(PatientID) %>%
   
-  # Rename VAS column and sex columns
-  rename("Sex" = "Sex (1=male, 2=female)")
+  # Rename columns with long names
+  rename("Sex" = "Sex (1=male, 2=female)",
+         "Smoker" = "Smoker (1=yes, 2=no)",
+         "VAS-0" = "VAS-at-inclusion",
+         "VAS-12" = "Vas-12months")
+
 
 # Check that the number of patients in the clean dataset is the same
-n_patients3 <- length(unique(biomarkers_vas$PatientID))
+n_patients3 <- length(unique(full_dataset_clean$PatientID))
 sprintf("The number of patients in the clean dataset is %s.", n_patients3)
 
-# 1 patient is missing - no data for inclusion.
+# 1 patient is missing data for inclusion.
 
 
-
+# Save data ---------------------------------------------------------------
+write.csv(full_dataset_clean, "data/biomarkers_covariates_clean.csv")
