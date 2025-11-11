@@ -4,8 +4,6 @@
 
 # Load packages ---------------------------------------------------------------
 library(dplyr) # for pipes and manipulation
-library(broom) # for tidy test results
-library(gtsummary) # for publication ready tables
 library(rstatix) # for a t_test (wrapper for t.test)
 
 # Load data -------------------------------------------------------------------
@@ -31,31 +29,75 @@ biomarker <- read.csv("data/biomarkers_covariates_clean.csv")
 # The script to perform all 9 tests together was taken from Datanovia (2020).
 biomarker_long <- biomarker %>%
   select(il_8:csf_1,sex) %>% # remove columns that won't be used in testing
-  pivot_longer(-sex, names_to = "biomarkers", values_to = "value")
+  pivot_longer(-sex, names_to = "biomarker", values_to = "value")
 
 # See the long dataset
 biomarker_long
 
 # Construct Welch t-tests for all 9 biomarkers
-hypotheses_test <- biomarker_long %>%
-  group_by(biomarkers) %>%
-  t_test(value ~ sex)
+h_test <- biomarker_long %>%
+  group_by(biomarker) %>%
+  t_test(value ~ sex, detailed = TRUE)
 
 # See test results
-hypotheses_test
+h_test
 
+# Polish the table
+h_test_tbl <- h_test %>% 
+  # select columns to report
+  select(biomarker, estimate1, estimate2, p, conf.low, conf.high) %>%
+  # adjust number of signigicant figures
+  mutate(
+    estimate1 = round(estimate1, digits = 2),
+    estimate2 = round(estimate2, digits = 2),
+    p = round(p, digits = 3),
+    conf.low = round(conf.low, digits = 2),
+    conf.high = round(conf.high, digits = 2)
+    ) %>%
+  # rename columns to meanigful names
+  rename(
+    c(male = estimate1,
+    female = estimate2)
+  )
+
+h_test_tbl
 
 # Bonferroni Correction ------------------------------------------------------
 
 # The probability of making a Type I error is 0.05 across all 9 t-tests, lowering 
 # the p-value necessary to reach significance for each individual test to 0.006.
 
-hypotheses_test_bonferroni <- biomarker_long %>%
-  group_by(biomarkers) %>%
-  t_test(value ~ sex) %>%
+h_test_bonferroni <- biomarker_long %>%
+  group_by(biomarker) %>%
+  t_test(value ~ sex, detailed = TRUE) %>%
   adjust_pvalue(method = "bonferroni")
 
-hypotheses_test_bonferroni
+h_test_bonferroni
+
+bonferroni_tbl <- h_test_bonferroni %>% 
+  # select columns to report
+  select(biomarker, estimate1, estimate2, p.adj, conf.low, conf.high) %>%
+  # adjust number of signigicant figures
+  mutate(
+    estimate1 = round(estimate1, digits = 2),
+    estimate2 = round(estimate2, digits = 2),
+    p.adj = round(p.adj, digits = 3),
+    conf.low = round(conf.low, digits = 2),
+    conf.high = round(conf.high, digits = 2)
+  ) %>%
+  # rename columns to meanigful names
+  rename(
+    c(male = estimate1,
+      female = estimate2,
+      p_adj = p.adj)
+  )
+
+bonferroni_tbl
 
 # None of the tests fulfill significance for the alternative hypothesis with
 # Bonferroni correction.
+
+# Save tables for report -----------------------------------------------------
+write.csv(h_test_tbl, "data/hypothesis_test_table.csv")
+write.csv(bonferroni_tbl, "data/hypothesis_test_table_bonferroni.csv")
+
