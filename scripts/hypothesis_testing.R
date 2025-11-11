@@ -45,20 +45,22 @@ h_test
 # Polish the table
 h_test_tbl <- h_test %>% 
   # select columns to report
-  select(biomarker, estimate1, estimate2, p, conf.low, conf.high) %>%
-  # adjust number of signigicant figures
+  select(biomarker, estimate, estimate1, estimate2, p, conf.low, conf.high) %>%
+  # adjust number of significant figures
   mutate(
+    estimate = round(estimate, digits = 3),
     estimate1 = round(estimate1, digits = 2),
     estimate2 = round(estimate2, digits = 2),
     p = round(p, digits = 3),
     conf.low = round(conf.low, digits = 2),
     conf.high = round(conf.high, digits = 2)
     ) %>%
-  # rename columns to meanigful names
+  # rename columns to meaningful names
   rename(
-    c(male = estimate1,
-    female = estimate2)
-  )
+    c(difference = estimate,
+      male = estimate1,
+      female = estimate2)
+    )
 
 h_test_tbl
 
@@ -67,37 +69,44 @@ h_test_tbl
 # The probability of making a Type I error is 0.05 across all 9 t-tests, lowering 
 # the p-value necessary to reach significance for each individual test to 0.006.
 
+# Adjust the hypothesis test with Bonferroni correction
 h_test_bonferroni <- biomarker_long %>%
   group_by(biomarker) %>%
   t_test(value ~ sex, detailed = TRUE) %>%
   adjust_pvalue(method = "bonferroni")
 
+# See test results
 h_test_bonferroni
 
+# Create a table for test results with Bonferroni correction
 bonferroni_tbl <- h_test_bonferroni %>% 
   # select columns to report
-  select(biomarker, estimate1, estimate2, p.adj, conf.low, conf.high) %>%
-  # adjust number of signigicant figures
+  select(biomarker, estimate, estimate1, estimate2, p.adj, conf.low, conf.high) %>%
+  # adjust number of significant figures
   mutate(
+    estimate = round(estimate, digits = 3),
     estimate1 = round(estimate1, digits = 2),
     estimate2 = round(estimate2, digits = 2),
     p.adj = round(p.adj, digits = 3),
     conf.low = round(conf.low, digits = 2),
     conf.high = round(conf.high, digits = 2)
   ) %>%
-  # rename columns to meanigful names
+  # rename columns to meaningful names
   rename(
-    c(male = estimate1,
+    c(difference = estimate,
+      male = estimate1,
       female = estimate2,
       p_adj = p.adj)
   )
 
+
+# See table
 bonferroni_tbl
 
 # None of the tests fulfill significance for the alternative hypothesis with
 # Bonferroni correction.
 
 # Save tables for report -----------------------------------------------------
-write.csv(h_test_tbl, "data/hypothesis_test_table.csv")
-write.csv(bonferroni_tbl, "data/hypothesis_test_table_bonferroni.csv")
+write.csv(h_test_tbl, "data/hypotheses_tests_table.csv")
+write.csv(bonferroni_tbl, "data/hypotheses_tests_table_bonferroni.csv")
 
