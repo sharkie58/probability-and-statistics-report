@@ -72,7 +72,7 @@ However, we will assume the random variables are independent with normal distrib
 
 ### Test:
 
-A Welch two-sample t-test was used to compare the means of two groups (male, female). Welch's t-test was chosen as it performs better than Student's t-test sample sizes and variances between groups, and gives the same result when sample sizes and variances are equal (Delacre et al., 2022). The Welch t-test is a robust method that can deal with unequal variances and tolerate slight departure from normality.
+A Welch two-sample t-test was used to compare the means of two groups (male, female). Welch's t-test was chosen as it performs better than Student's t-test sample sizes and variances between groups, and gives the same result when sample sizes and variances are equal (Delacre et al., 2022). The Welch t-test is a robust method that can deal with unequal variances and tolerate slight departure from normality. 
 
 ### Multiple Hypothesis Testing:
 
@@ -83,18 +83,48 @@ $$
 1-(1-\alpha)^9
 \end{aligned}
 $$
-For $\alpha$ 0.05, the probability of making at least one Type I error is 0.37.
+For $\alpha$ = 0.05, the probability of making at least one Type I error is 0.37.
 
 ### Bonferroni Correction
 
+Bonferroni correction is a classic way to deal with the increasing Type I error with multiple hypothesis testing. Instead of having the probability of Type I error, $\alpha$ = 0.05, for all independent tests, this will be the probability of Type I error across all 9 tests, lowering the p value for each individual test to 0.006 to reach significance.
+
+$$
+\begin{aligned}
+p < \left( \frac{0.05}{9} \right)
+\end{aligned}
+$$
 
 ## Regression Modelling
 
 # Results
 
-# Discussion
+## Statistical Hypothesis Testing
 
-# Conclusion
+### Welch Two-Sample t-test
+
+Significant difference was found using a Welch t-test without a correction for multiple hypothesis testing, between males and females for four biomarker levels: CSF_1, CXCL1, TGF_beta_1, and VEGF_A. The corresponding difference between means, means of the two groups, p-values and 95% confidence intervals are given in Table 1 belw.
+
+```{r table1, echo = FALSE}
+table1 <- read.csv("../data/hypotheses_tests_table.csv")
+
+table1 |> knitr::kable(caption = "Welch t-test results comparing levels of 9 biomarkers between males and females, including mean values, difference between means, p-values, and 95% confidence intervals.")
+
+```
+
+### Welch Two-Sample t-test with Bonferroni Correction
+
+There was no significant difference between male and female levels of the 9 biomarkers when the p-values were adjusted with Bonferroni's correction. Results are given in Table 2 below.
+
+```{r table2, echo = FALSE}
+table2 <- read.csv("../data/hypotheses_tests_table_bonferroni.csv")
+
+table2 |> knitr::kable(caption = "Welch t-test results with Bonferroni correction comparing levels of 9 biomarkers between males and females, including mean values, difference between means, adjusted p-values, and 95% confidence intervals.")
+
+```
+
+
+# Conclusions
 
 # References
 
@@ -102,10 +132,15 @@ herzog
 moen
 mazure and jones
 delacre
+Datanovia. (2020). How to Perform Multiple T-test in R for Different Variables - Datanovia. https://www.datanovia.com/en/blog/how-to-perform-multiple-t-test-in-r-for-different-variables/
 
 ## Appendices
 
 Appendix 1: Initial Data Manipulation Script
+
+Appendix 2: Hypothesis Testing Script
+
+Appendix 3: Regression Modelling Script
 
 
 
