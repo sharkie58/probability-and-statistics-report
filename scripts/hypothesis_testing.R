@@ -50,10 +50,10 @@ h_test_tbl <- h_test %>%
   select(biomarker, estimate, estimate1, estimate2, p, conf.low, conf.high) %>%
   # adjust number of significant figures
   mutate(
-    estimate = round(estimate, digits = 3),
+    estimate = round(estimate, digits = 2),
     estimate1 = round(estimate1, digits = 2),
     estimate2 = round(estimate2, digits = 2),
-    p = round(p, digits = 3),
+    p = round(p, digits = 2),
     conf.low = round(conf.low, digits = 2),
     conf.high = round(conf.high, digits = 2)
     ) %>%
@@ -86,10 +86,10 @@ bonferroni_tbl <- h_test_bonferroni %>%
   select(biomarker, estimate, estimate1, estimate2, p.adj, conf.low, conf.high) %>%
   # adjust number of significant figures
   mutate(
-    estimate = round(estimate, digits = 3),
+    estimate = round(estimate, digits = 2),
     estimate1 = round(estimate1, digits = 2),
     estimate2 = round(estimate2, digits = 2),
-    p.adj = round(p.adj, digits = 3),
+    p.adj = round(p.adj, digits = 2),
     conf.low = round(conf.low, digits = 2),
     conf.high = round(conf.high, digits = 2)
   ) %>%
