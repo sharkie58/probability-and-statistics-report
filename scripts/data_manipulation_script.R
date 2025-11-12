@@ -39,14 +39,14 @@ n_patients2 <- length(unique(covariates$PatientID))
 sprintf("The number of patients in the covariates dataset is %s.", n_patients2)
 
 # Left join datasets to only keep data for patients with biomarker measurements
-full_dataset <- left_join(biomarkers_id, covariates, by = "PatientID")
-summary(full_dataset)
+biomarkers_covariates <- left_join(biomarkers_id, covariates, by = "PatientID")
+summary(biomarkers_covariates)
 
 
 # Prepare data for Statistical Analysis and Regression Modelling ----------
 
 # Create a clean dataset of biomarkers at inclusion and all covariates
-full_dataset_clean <- full_dataset %>%
+biomarkers_covariates_clean <- biomarkers_covariates %>%
   
   # Limit Time to only at inclusion
   filter(Time == "0weeks") %>%
@@ -68,21 +68,21 @@ full_dataset_clean <- full_dataset %>%
 
 
 # Check that the number of patients in the clean dataset is the same
-n_patients3 <- length(unique(full_dataset_clean$patient_id))
+n_patients3 <- length(unique(biomarkers_covariates_clean$patient_id))
 sprintf("The number of patients in the clean dataset is %s.", n_patients3)
 
 # 1 patient is missing data for inclusion.
 
 # Check for NAs
-nas <- sum(is.na(full_dataset_clean))
-sprintf("There are %s NAs in full_dataset_clean.", nas)
+nas <- sum(is.na(biomarkers_covariates_clean))
+sprintf("There are %s NAs in biomarkers_covariates_clean.", nas)
 
 # Find the NAs
-colSums(is.na(full_dataset_clean)) # 2 missing values in VAS after 12 months.
+colSums(is.na(biomarkers_covariates_clean)) # 2 missing values in VAS after 12 months.
 
 # Check distributions -----------------------------------------------------
 
-female <- full_dataset_clean %>%
+female <- biomarkers_covariates_clean %>%
   filter(sex == 2)
 
 hist(female$il_8) # normal
@@ -95,7 +95,7 @@ hist(female$cxcl1) # left skew
 hist(female$il_18) # normal
 hist(female$csf_1) # normal
 
-male <- full_dataset_clean %>%
+male <- biomarkers_covariates_clean %>%
   filter(sex == 1)
 
 hist(male$il_8) # normal
@@ -109,5 +109,5 @@ hist(male$il_18) # not normal
 hist(male$csf_1) # normal
 
 # Save data ---------------------------------------------------------------
-write.csv(full_dataset_clean, "data/biomarkers_covariates_clean.csv")
+write.csv(biomarkers_covariates_clean, "data/biomarkers_covariates_clean.csv")
 
