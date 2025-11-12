@@ -1,6 +1,6 @@
 ---
 title: "Probability and Statistics Final Report"
-author: ""
+author: "s1861053"
 date: "2025-11-11"
 output: pdf_document
 fontsize: 12pt
@@ -30,11 +30,11 @@ Data manipulation, statistical hypothesis testing and regression modelling were 
 ## Data Manipulation
 
 The original datasets biomarkers.xlsx and covariates.xlsx were collated into a
-single dataframe and saved as a csv file "biomarkers_covariates_clean.csv".
+single dataframe using left join to only keep patients with complete biomarker values and saved as a csv file "biomarkers_covariates_clean.csv".
 
 The column names were simplified for easier manipulation, and only values of biomarkers at inclusion were selected for the purposes of the statistical hypothesis testing and regression modelling described below.
 
-2 NAs were found in VAS at 12 months (pain levels after one year).
+2 NAs were found in VAS at 12 months (pain levels after one year), these observations were deleted for the regression modelling.
 Normality was checked visually with histograms to make assumptions for statistical tests used below.
 
 The R script used for the data manipulation is available in Appendix 1.
@@ -72,7 +72,8 @@ However, we will assume the random variables are independent with normal distrib
 
 ### Test:
 
-A Welch two-sample t-test was used to compare the means of two groups (male, female). Welch's t-test was chosen as it performs better than Student's t-test sample sizes and variances between groups, and gives the same result when sample sizes and variances are equal (Delacre et al., 2022). The Welch t-test is a robust method that can deal with unequal variances and tolerate slight departure from normality. 
+A Welch two-sample t-test was used to compare the means of two groups (male, female). Welch's t-test performs better than Student's t-test for unequal sample sizes and variances between groups, and gives the same result when sample sizes and variances are equal (Delacre et al., 2022). Furthermore, variances do not need to be pre-tested. (Rasch et al., 2011).
+The Welch t-test was chosen as it is a standard and robust method that can deal with unequal variances and tolerate slight departure from normality. 
 
 ### Multiple Hypothesis Testing:
 
@@ -95,7 +96,11 @@ p < \left( \frac{0.05}{9} \right)
 \end{aligned}
 $$
 
+The script for the hypothesis testing is available in Appendix 2.
+
 ## Regression Modelling
+
+An 80-20 split was performed on the data to obtain a training and testing dataset, and to have the opportunity to adequately estimate true model performance on test data.
 
 # Results
 
@@ -133,6 +138,8 @@ moen
 mazure and jones
 delacre
 Datanovia. (2020). How to Perform Multiple T-test in R for Different Variables - Datanovia. https://www.datanovia.com/en/blog/how-to-perform-multiple-t-test-in-r-for-different-variables/
+Rasch, D., Kubinger, K. D., & Moder, K. (2009). The two-sample t test: pre-testing its assumptions does not pay off. Statistical Papers 2009 52:1, 52(1), 219–231. https://doi.org/10.1007/S00362-009-0224-X
+
 
 ## Appendices
 
