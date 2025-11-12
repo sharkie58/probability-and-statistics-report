@@ -7,7 +7,9 @@ library(dplyr) # for pipes and manipulation
 library(rstatix) # for a t_test (wrapper for t.test)
 
 # Load data -------------------------------------------------------------------
-biomarker <- read.csv("data/biomarkers_covariates_clean.csv")
+
+# Load merged dataset and set the first column as index
+biomarker <- read.csv("data/biomarkers_covariates_clean.csv", row.names = 1)
 
 # Hypothesis ------------------------------------------------------------------
 
