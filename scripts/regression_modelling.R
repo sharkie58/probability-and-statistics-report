@@ -4,6 +4,9 @@
 # Load packages --------------------------------------------------------------
 library(rsample) # for splitting data into test and training datasets
 library(ggplot2) # for plotting data
+library(ggfortify) # for checking assumptions
+library(gtsummary) # for regression summary table
+library(broom.helpers) # for regression summary table
 
 
 # Load data ------------------------------------------------------------------
@@ -39,7 +42,7 @@ model <- lm(
 # See model summary
 summary(model)
 
-# Create a model with only variables that have a signifficant relationship with vas_12
+# Create a model with only variables that have a significant relationship with vas_12
 model_narrow <- lm(
   vas_12 ~ il_8 + opg + tgf_beta_1 + il_6 + vas_0, 
   data = train
@@ -48,7 +51,7 @@ model_narrow <- lm(
 # See model summary
 summary(model_narrow)
 
-# the p-values of il_8 and tgf_beta_1 having a relationship with vas_12 are not 
+# The p-values of il_8 and tgf_beta_1 having a relationship with vas_12 are not 
 # significant in the second model. 
 
 model_narrow2 <- lm(
@@ -73,30 +76,53 @@ summary(model_narrow3)
 
 # Evaluate the model by checking assumptions  --------------------------------
 
-
 # Check assumptions (taken from Thulin (2025)):
-# 1. The model is linear in the parameters
 
-# Get the model residuals
-model_residuals = model$residuals
+# Plot residuals using ggfortify package:
+autoplot(model, which = 1:6, ncol = 2, label.size = 3)
 
-# Plot the residuals
-hist(model_residuals) # residuals appear normal
+# 1. The model is linear in the parameters 
+# Assumption fulfilled: Residuals vs fitted show a straight line.
 
-# Plot the residuals on a plot with a QQ line
-qqnorm(model_residuals)
-qqline(model_residuals) # residuals follow the QQ line, suggesting they are normal
+# 2. The observations are independent
+# We assume they are independent as this is harder to assess visually.
+
+# 3. Homoscedasticity (Random errors have the same variance)
+# Assumption fulfilled: Scale-Location plot shows approximately even spread of residuals
+
+# 4. Normally distributed random errors
+# Assumption fulfilled: Residuals (estimates of random errors) follow a normal 
+# distribution shown in the Normal QQ plot.
 
 
-# Create a table for regression results --------------------------------------
+# Create a table for regression results for training data---------------------
 
+# Create table
+regression_tbl <- tbl_regression(model,
+                                 intercept = TRUE,
+                                 conf.level = 0.95,
+                                 tidy_fun = broom.helpers::tidy_with_broom_or_parameters)
+# See table
+regression_tbl
 
-# Plot regression model ------------------------------------------------------
+# Generate predictions and compare to actual test data ------------------------
+predictions <- predict(model, test)
+
+pred_plot <- ggplot(test, aes(x=predictions, y=vas_12)) +
+  geom_point() +
+  theme_classic() +
+  geom_abline(intercept=0, 
+              slope=1,
+              colour = "red") +
+  labs(x='Predicted VAS (1-10)', y='Actual VAS (1-10)')
 
 
 
 # Save results ---------------------------------------------------------------
-
+write.csv(regression_tbl, 'data/regression_table.csv')
+ggsave(pred_plot, 
+       filename = "figures/prediction_vs_actual.png",
+       device = "png")
 
 
 
