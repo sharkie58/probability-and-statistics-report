@@ -3,6 +3,8 @@ title: "Probability and Statistics Final Report: Difference in Means and Regress
 author: "s1861053"
 output: pdf_document
 fontsize: 12pt
+header-includes:
+  - \usepackage{float}
 ---
 
 ```{r setup, include=FALSE}
@@ -126,16 +128,14 @@ table2 |> knitr::kable(caption = "Welch t-test results with Bonferroni correctio
 
 The model showed a low adjusted R-squared (Adj. R-squared = 0.26), and only 5 explanatory variables having a significant relationship with VAS at 12 months (out of 13 explanatory variables).
 
-The predicted values underestimated the actual values of VAS at 12 months (Fig. 1), with heteroscedastic residuals and RMSE 3.20.
+The predicted values underestimated the actual values of VAS at 12 months (Fig. 1), with heteroscedastic residuals and RMSE 3.20.The smaller model showed a lower adjusted R-squared (Adj. R-squared = 0.23), a higher RMSE (RMSE = 3.26), and similarly underestimating predictions for VAS at 12 months (Appendix 8).
 
-
-\begin{figure}[h]
-  \includegraphics[scale=0.75]{"../figures/prediction_vs_actual.png"}
+\begin{figure}[ht]
+  \includegraphics[scale=0.65]{"../figures/prediction_vs_actual.png"}
   \caption{Predicted values of VAS at 12 months from multiple regression model using train data, plotted against actual VAS at 12 months from test data. RMSE = 3.20.}
 \end{figure}
 
-The smaller model showed a lower adjusted R-squared (Adj. R-squared = 0.23), a higher RMSE (RMSE = 3.26), and similarly underestimating predictions for VAS at 12 months (Appendix 8).
-
+\newpage
 
 # Conclusions
 
