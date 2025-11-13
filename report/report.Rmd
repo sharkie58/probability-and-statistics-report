@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
+The code for this report is hosted at: https://github.com/sharkie58/probability-and-statistics-report.git.
+
 # Introduction
 
 This report addresses the statistical analysis and regression modelling of 9 randomly selected biomarkers related to inflammation in patients with disc herniation. The original data contains levels of 9 biomarkers at inclusion, at 6 weeks and at 12 months along with covariates such as patient age, sex, smoking status and their reported pain on a scale form 1 to 10 at inclusion and after 12 months (VAS at inclusion and VAS at 12 months). 
