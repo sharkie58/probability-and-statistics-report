@@ -1,31 +1,28 @@
 ---
-title: "Probability and Statistics Final Report"
+title: "Probability and Statistics Final Report: Difference in Means and Regression Modelling"
 author: "s1861053"
-date: "2025-11-11"
 output: pdf_document
 fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
 ```
 
 # Introduction
 
-This report addresses the statistical analysis and regression modelling of 9 randomly selected biomarkers related to inflammation in patients with disc herniation (Moen, 2016). The original data contains levels of 9 biomarkers at inclusion, at 6 weeks and at 12 months along with covariates such as Patient age, sex, smoking status and their reported pain on a scale form 1 to 10 at inclusion and after 12 months (VAS). 
+This report addresses the statistical analysis and regression modelling of 9 randomly selected biomarkers related to inflammation in patients with disc herniation. The original data contains levels of 9 biomarkers at inclusion, at 6 weeks and at 12 months along with covariates such as patient age, sex, smoking status and their reported pain on a scale form 1 to 10 at inclusion and after 12 months (VAS at inclusion and VAS at 12 months). 
 
-Among other covariates, understanding the effect of sex and gender on health is instrumental in delivering appropriate treatment and tailoring dosages of drugs. The first requirement to include women as well as men in medical trials and result analysis was 30 years ago, and progress has been slow and the possibility of sex-specific treatment response is still understudied (Mazure and Jones, 2015). Studying the biomarker levels by sex can help develop new approaches to prevention, diagnosis and treatment specific to patients' sex. If biomarker levels differ between males and females, it suggests a different patophysiology of the condition for men and women. This can help in future applications to advise whether the treatment needs to be tailored based on sex. To narrow down the research question, only biomarker levels at inclusion will be analysed. Hence, the first part of this report will focus on the question: Do the levels of each biomarker vary between males and females at inclusion? The following hypotheses were constructed to answer this question:
+Among other covariates, understanding the effect of sex and gender on health is instrumental in delivering appropriate treatment and tailoring dosages of drugs. The possibility of sex-specific treatment response is still understudied (Mazure and Jones, 2015), and studying the biomarker levels by sex could help develop new approaches to prevention, diagnosis and treatment specific to patients' sex. Hence, the first part of this report focused on the question: Do the levels of each biomarker vary between males and females at inclusion? 
 
-* H0: Mean level of biomarker X at inclusion is the same for males and females.
-* H1: Mean level of biomarker X at inclusion differs between males and females.
-
-In the second part of the report, a regression model will be constructed to make predictions on the patients' recovery (pain after 12 months) based on the available covariates, including patients' sex, age, smoking, and pain levels.
+In the second part of the report, a regression model was constructed to make predictions on the patients' recovery based on the available covariates, including patients' sex, age, smoking, and pain levels at inclusion.
 
 
 
 # Methods
 
-Data manipulation, statistical hypothesis testing and regression modelling were performed in R. The full scripts are available in the Appendix.
+Data manipulation, statistical hypothesis testing and regression modelling were performed in R. The software specifications are included in Appendix 1, and full scripts are available in Appendix 2, 3, and 4.
 
 ## Data Manipulation
 
@@ -35,9 +32,7 @@ single dataframe using left join to only keep patients with complete biomarker v
 The column names were simplified for easier manipulation, and only values of biomarkers at inclusion were selected for the purposes of the statistical hypothesis testing and regression modelling described below.
 
 2 NAs were found in VAS at 12 months (pain levels after one year), these observations were deleted for the regression modelling.
-Normality was checked visually with histograms to make assumptions for statistical tests used below.
-
-The R script used for the data manipulation is available in Appendix 1.
+Normality was checked visually with histograms.
 
 ## Statistical Hypothesis testing
 
@@ -68,11 +63,11 @@ $$
 ### Distribution:
 
 While most levels of biomarkers for males and females appear to be approximately normally distributed, levels of TGF_beta_1, IL-6, CXCL9 are not normally distributed for either sexes, and level of IL-18 for male patients is not normally distributed.
-However, we will assume the random variables are independent with normal distributions using the Central Limit Theorem, as sample size of each group is large (>30), and the underlying sampling distribution can be approximately normal.
+However, normal distributions were assumed using the Central Limit Theorem, as sample size of each group is large (>30).
 
 ### Test:
 
-A Welch two-sample t-test was used to compare the means of two groups (male, female). Welch's t-test performs better than Student's t-test for unequal sample sizes and variances between groups, and gives the same result when sample sizes and variances are equal (Delacre et al., 2022). Furthermore, variances do not need to be pre-tested. (Rasch et al., 2011).
+A Welch two-sample t-test was used to compare the means of two groups (male, female). Welch's t-test performs better than Student's t-test for unequal sample sizes and variances between groups, and gives the same result when sample sizes and variances are equal (Delacre et al., 2022). Furthermore, variances do not need to be pre-tested (Rasch et al., 2011).
 The Welch t-test was chosen as it is a standard and robust method that can deal with unequal variances and tolerate slight departure from normality. 
 
 ### Multiple Hypothesis Testing:
@@ -88,19 +83,17 @@ For $\alpha$ = 0.05, the probability of making at least one Type I error is 0.37
 
 ### Bonferroni Correction
 
-Bonferroni correction is a classic way to deal with the increasing Type I error with multiple hypothesis testing. Instead of having the probability of Type I error, $\alpha$ = 0.05, for all independent tests, this will be the probability of Type I error across all 9 tests, lowering the p value for each individual test to 0.006 to reach significance.
-
-$$
-\begin{aligned}
-p < \left( \frac{0.05}{9} \right)
-\end{aligned}
-$$
-
-The script for the hypothesis testing is available in Appendix 2.
+Bonferroni's correction was used to deal with the increasing Type I error with multiple hypothesis testing. Instead of having the probability of Type I error, $\alpha$ = 0.05, for all independent tests, this was set as the probability of Type I error across all 9 tests, lowering the p value for each individual test to 0.006 to reach significance. The adjusted p-value accounted for this.
 
 ## Regression Modelling
 
-An 80-20 split was performed on the data to obtain a training and testing dataset, and to have the opportunity to adequately estimate true model performance on test data.
+An 80-20 split was performed on the data to obtain a training and a testing dataset to adequately estimate true model performance on test data.
+The following assumptions of linear regression (Thulin, 2025) were fulfilled: the model is linear in the parameters and the random errors are homoscedastic and normally distributed (Appendix 5). It was assumed the observations were independent.
+A multiple regression model was created with VAS at 12 months as the response variable and all biomarkers and all other covariates as explanatory variables.
+Predictions were made and were plotted against previously split test data.
+
+As multiple explanatory variables were not significantly related to the response variable (Appendix 6), models with only significant variables were produced in iteration, resulting in another model with only IL-6 and VAS at inclusion as explanatory variables (Appendix 7). The predictions of this smaller model were fitted to the actual test values.
+
 
 # Results
 
@@ -108,9 +101,10 @@ An 80-20 split was performed on the data to obtain a training and testing datase
 
 ### Welch Two-Sample t-test
 
-Significant difference was found using a Welch t-test without a correction for multiple hypothesis testing, between males and females for four biomarker levels: CSF_1, CXCL1, TGF_beta_1, and VEGF_A. The corresponding difference between means, means of the two groups, p-values and 95% confidence intervals are given in Table 1 belw.
+Significant difference was found using a Welch t-test without a correction for multiple hypothesis testing, between males and females for four biomarker levels: CSF_1, CXCL1, TGF_beta_1, and VEGF_A. The corresponding difference between means, means of the two groups, p-values and 95% confidence intervals are given in Table 1 below.
 
 ```{r table1, echo = FALSE}
+
 table1 <- read.csv("../data/hypotheses_tests_table.csv")
 
 table1 |> knitr::kable(caption = "Welch t-test results comparing levels of 9 biomarkers between males and females, including mean values, difference between means, p-values, and 95% confidence intervals.")
@@ -128,26 +122,530 @@ table2 |> knitr::kable(caption = "Welch t-test results with Bonferroni correctio
 
 ```
 
+## Regression Modelling
+
+The model showed a low adjusted R-squared (Adj. R-squared = 0.26), and only 5 explanatory variables having a significant relationship with VAS at 12 months (out of 13 explanatory variables).
+
+The predicted values underestimated the actual values of VAS at 12 months (Fig. 1), with heteroscedastic residuals and RMSE 3.20.
+
+
+\begin{figure}[h]
+  \includegraphics[scale=0.75]{"../figures/prediction_vs_actual.png"}
+  \caption{Predicted values of VAS at 12 months from multiple regression model using train data, plotted against actual VAS at 12 months from test data. RMSE = 3.20.}
+\end{figure}
+
+The smaller model showed a lower adjusted R-squared (Adj. R-squared = 0.23), a higher RMSE (RMSE = 3.26), and similarly underestimating predictions for VAS at 12 months (Appendix 8).
+
 
 # Conclusions
 
+Four biomarkers (CSF-1, CXCL1, TDF-beta-1, and VEGF_A, Table 1) showed a significant difference between males and females. However, as there was no correction for multiple testing, the probability that one of these is a Type I error is 0.37. The evidence in Table 2 shows no significant difference in means between males and females when testing hypotheses with Bonferroni's correction, hence the null hypothesis was accepted.
+
+Bonferroni's correction is the most commonly used correction for multiple testing, however it has its own limitations, such as the assumption of all null hypotheses to be true (Herzog, 2019). This correction lowers the alpha to ensure the probability of committing one or more Type I errors is less than 0.05, however is more relevant for cases with joint intersection of hypotheses, as Type I errors are independent of each other and can coexist (Garcia Perez, 2023). As such, other corrections can be tested in the future, such as Holms correction, to compare results and determine whether any of the selected biomarkers have different levels for males and females.
+
+The multiple regression model did not perform well in predicting the pain outcomes for patients after 1 year from all biomarkers at inclusion and all covariates. It underestimated high VAS values by almost a half (Fig.1), and most of the explanatory variables were not significant in the model. The second model presented in Appendix 6 and 7 only considered explanatory variables that were significant, however its adjusted R-square value was lower and the predictions were underestimating actual values in a similar trend.
+
+The model could potentially be improved by testing for interactions in the model, including more covariates, or more closely assessing whether linear regression is appropriate. The large underestimation of the predictions could suggest another probability distribution may be needed.
+
+\newpage
+
 # References
 
-herzog
-moen
-mazure and jones
-delacre
 Datanovia. (2020). How to Perform Multiple T-test in R for Different Variables - Datanovia. https://www.datanovia.com/en/blog/how-to-perform-multiple-t-test-in-r-for-different-variables/
+
+Delacre, M., Lakens, D., & Leys, C. (2022). Why Psychologists Should by Default Use Welch’s t-test Instead of Student’s t-test. International Review of Social Psychology, 35(1). https://doi.org/10.5334/IRSP.661
+
+García-Pérez, M. A. (2023). Use and misuse of corrections for multiple testing. Methods in Psychology, 8, 100120. https://doi.org/10.1016/J.METIP.2023.100120
+
+Herzog, M. H., Francis, G., & Clarke, A. (2019). The Multiple Testing Problem. 63–66. https://doi.org/10.1007/978-3-030-03499-3_5
+
+Mazure, C. M., & Jones, D. P. (2015). Twenty years and still counting: including women as participants and studying sex and gender in biomedical research. BMC Women’s Health 2015 15:1, 15(1), 1–16. https://doi.org/10.1186/S12905-015-0251-9
+
 Rasch, D., Kubinger, K. D., & Moder, K. (2009). The two-sample t test: pre-testing its assumptions does not pay off. Statistical Papers 2009 52:1, 52(1), 219–231. https://doi.org/10.1007/S00362-009-0224-X
 
+Thulin, M. (2025). 8. Regression Models. In Modern statistics with R : from wrangling and exploring data to inference and predictive modelling. CRC Press.
+
+\newpage
 
 ## Appendices
 
-Appendix 1: Initial Data Manipulation Script
+Appendix 1: Software Specifications
 
-Appendix 2: Hypothesis Testing Script
+| Package          | Version  |
+|------------------|----------|
+| knitr            | 1.50     |
+| broom.helpers    | 1.22.0   |
+| ggfortify        | 0.4.19   |
+| rsample          | 1.3.1    |
+| rstatix          | 0.7.3    |
+| gtsummary        | 2.4.0    |
+| broom            | 1.0.10   |
+| ggplot2          | 4.0.0    |
+| janitor          | 2.2.1    |
+| tidyr            | 1.3.1    |
+| dplyr            | 1.1.4    |
+| readxl           | 1.4.5    |
+| gt               | 1.1.0    |
 
-Appendix 3: Regression Modelling Script
+**R version:** 4.3.1  
+**Operating system:** Windows 11
+
+\newpage
+
+**Appendix 2: Initial Data Manipulation Script**
+
+```{r, eval=FALSE}
+
+# Probability and Statistics
+# Final Assessment: Data Manipulation Script
+
+# Load packages -----------------------------------------------------------
+library(readxl) # for reading excel files
+library(dplyr) # for pipe operators and manipulating data frames
+library(tidyr) # for manipulating data frames, separate_wider_delim()
+library(janitor) # for cleaning column names
+
+
+# Load data ---------------------------------------------------------------
+biomarkers <- read_excel("data/biomarkers.xlsx")
+covariates <- read_excel("data/covariates.xlsx")
+
+# Explore data ------------------------------------------------------------
+biomarkers
+covariates
+
+
+# Connect biomarkers with covariates datasets -----------------------------
+
+# Separate the column "Biomarkers" to two columns "PatientID" and "Time"
+biomarkers_id <- separate_wider_delim(biomarkers, 
+                                      Biomarker, 
+                                      delim = "-", 
+                                      names = c("PatientID", "Time"))
+biomarkers_id
+
+# Convert Patient ID in both datasets to numeric
+covariates$PatientID <- as.numeric(covariates$PatientID)
+biomarkers_id$PatientID <- as.numeric(biomarkers_id$PatientID)
+
+# Calculate number of patients in each dataset
+n_patients <- length(unique(biomarkers_id$PatientID))
+sprintf("The number of patients in the biomarkers dataset is %s.", n_patients)
+
+# Check that the number of patients in the covariates dataset is the same
+n_patients2 <- length(unique(covariates$PatientID))
+sprintf("The number of patients in the covariates dataset is %s.", n_patients2)
+
+# Left join datasets to only keep data for patients with biomarker measurements
+biomarkers_covariates <- left_join(biomarkers_id, covariates, by = "PatientID")
+summary(biomarkers_covariates)
+
+
+# Prepare data for Statistical Analysis and Regression Modelling ----------
+
+# Create a clean dataset of biomarkers at inclusion and all covariates
+biomarkers_covariates_clean <- biomarkers_covariates %>%
+  
+  # Limit Time to only at inclusion
+  filter(Time == "0weeks") %>%
+
+  # Remove redundant Time column
+  select(-Time) %>%
+  
+  # Reorder the dataset by PatientID
+  arrange(PatientID) %>%
+  
+  # Rename columns with long names
+  rename("Sex" = "Sex (1=male, 2=female)",
+         "Smoker" = "Smoker (1=yes, 2=no)",
+         "VAS-0" = "VAS-at-inclusion",
+         "VAS-12" = "Vas-12months") %>%
+  
+  # Clean all column names with the janitor package
+  clean_names()
+
+
+# Check that the number of patients in the clean dataset is the same
+n_patients3 <- length(unique(biomarkers_covariates_clean$patient_id))
+sprintf("The number of patients in the clean dataset is %s.", n_patients3)
+
+# 1 patient is missing data for inclusion.
+
+# Check for NAs
+nas <- sum(is.na(biomarkers_covariates_clean))
+sprintf("There are %s NAs in biomarkers_covariates_clean.", nas)
+
+# Find the NAs
+colSums(is.na(biomarkers_covariates_clean)) # 2 missing values in VAS after 12 months.
+
+# Check distributions -----------------------------------------------------
+
+female <- biomarkers_covariates_clean %>%
+  filter(sex == 2)
+
+hist(female$il_8) # normal
+hist(female$vegf_a) # normal
+hist(female$opg) # normal
+hist(female$tgf_beta_1) # not normal
+hist(female$il_6) # right skew
+hist(female$cxcl9) # right skew
+hist(female$cxcl1) # left skew
+hist(female$il_18) # normal
+hist(female$csf_1) # normal
+
+male <- biomarkers_covariates_clean %>%
+  filter(sex == 1)
+
+hist(male$il_8) # normal
+hist(male$vegf_a) # normal
+hist(male$opg) # normal
+hist(male$tgf_beta_1) # not normal
+hist(male$il_6) # right skew
+hist(male$cxcl9) # right skew
+hist(male$cxcl1) # left skew
+hist(male$il_18) # not normal
+hist(male$csf_1) # normal
+
+# Save data ---------------------------------------------------------------
+write.csv(biomarkers_covariates_clean, "data/biomarkers_covariates_clean.csv")
+
+
+```
+
+
+\newpage
+
+**Appendix 3: Hypothesis Testing Script**
+
+```{r, eval=FALSE}
+
+# Probability and Statistics
+# Final Assessment: Statistical Hypothesis Testing
+
+
+# Load packages ---------------------------------------------------------------
+library(dplyr) # for pipes and manipulation
+library(rstatix) # for a t_test (wrapper for t.test)
+
+# Load data -------------------------------------------------------------------
+
+# Load merged dataset and set the first column as index
+biomarker <- read.csv("data/biomarkers_covariates_clean.csv", row.names = 1)
+
+# Hypothesis ------------------------------------------------------------------
+
+# Question:
+# Do the levels of each biomarker vary between males and females at inclusion?
+
+# Hypotheses:
+# H0: Mean level of biomarker X at inclusion is the same for males and females.
+
+# H1: Mean level of biomarker X at inclusion differs between males and females.
+
+# Welch two sample t-tests ----------------------------------------------------
+
+# Use the Welch test to compare the means of each of 9 biomarkers
+
+# To perform t-tests in a single loop, convert data from wide to long format 
+# The script to perform all 9 tests together was taken from Datanovia (2020).
+biomarker_long <- biomarker %>%
+  select(il_8:csf_1,sex) %>% # remove columns that won't be used in testing
+  pivot_longer(-sex, names_to = "biomarker", values_to = "value")
+
+# See the long dataset
+biomarker_long
+
+# Construct Welch t-tests for all 9 biomarkers
+h_test <- biomarker_long %>%
+  group_by(biomarker) %>%
+  t_test(value ~ sex, detailed = TRUE)
+
+# See test results
+h_test
+
+# Polish the table
+h_test_tbl <- h_test %>% 
+  # select columns to report
+  select(biomarker, estimate, estimate1, estimate2, p, conf.low, conf.high) %>%
+  # adjust number of significant figures
+  mutate(
+    estimate = round(estimate, digits = 2),
+    estimate1 = round(estimate1, digits = 2),
+    estimate2 = round(estimate2, digits = 2),
+    p = round(p, digits = 2),
+    conf.low = round(conf.low, digits = 2),
+    conf.high = round(conf.high, digits = 2)
+    ) %>%
+  # rename columns to meaningful names
+  rename(
+    c(difference = estimate,
+      male = estimate1,
+      female = estimate2)
+    )
+
+h_test_tbl
+
+# Bonferroni Correction ------------------------------------------------------
+
+# The probability of making a Type I error is 0.05 across all 9 t-tests, lowering 
+# the p-value necessary to reach significance for each individual test to 0.006.
+
+# Adjust the hypothesis test with Bonferroni correction
+h_test_bonferroni <- biomarker_long %>%
+  group_by(biomarker) %>%
+  t_test(value ~ sex, detailed = TRUE) %>%
+  adjust_pvalue(method = "bonferroni")
+
+# See test results
+h_test_bonferroni
+
+# Create a table for test results with Bonferroni correction
+bonferroni_tbl <- h_test_bonferroni %>% 
+  # select columns to report
+  select(biomarker, estimate, estimate1, estimate2, p.adj, conf.low, conf.high) %>%
+  # adjust number of significant figures
+  mutate(
+    estimate = round(estimate, digits = 2),
+    estimate1 = round(estimate1, digits = 2),
+    estimate2 = round(estimate2, digits = 2),
+    p.adj = round(p.adj, digits = 2),
+    conf.low = round(conf.low, digits = 2),
+    conf.high = round(conf.high, digits = 2)
+  ) %>%
+  # rename columns to meaningful names
+  rename(
+    c(difference = estimate,
+      male = estimate1,
+      female = estimate2,
+      p_adj = p.adj)
+  )
+
+
+# See table
+bonferroni_tbl
+
+# None of the tests fulfill significance for the alternative hypothesis with
+# Bonferroni correction.
+
+# Save tables for report -----------------------------------------------------
+write.csv(h_test_tbl, "data/hypotheses_tests_table.csv")
+write.csv(bonferroni_tbl, "data/hypotheses_tests_table_bonferroni.csv")
+
+
+```
+
+\newpage
+
+**Appendix 4: Regression Modelling Script**
+
+```{r, eval=FALSE}
+
+# Probability and Statistics
+# Final Assessment: Regression Modelling
+
+# Load packages --------------------------------------------------------------
+library(rsample) # for splitting data into test and training datasets
+library(ggplot2) # for plotting data
+library(ggfortify) # for checking assumptions
+library(gtsummary) # for regression summary table
+library(broom.helpers) # for regression summary table
+library(gt) # to save gtsummary tables
+
+
+# Load data ------------------------------------------------------------------
+
+# Load merged dataset and set the first column as index
+biomarker <- read.csv("data/biomarkers_covariates_clean.csv", row.names = 1)
+
+# Split data ---------------------------------------------------------------
+
+# Set seed for reproduction of random sampling 
+set.seed(1212) 
+
+# Perform a random 80/20 split
+split <- initial_split(biomarker, prop = 0.8) 
+
+# 80% of values in training dataset
+train <- training(split)
+
+# 20% of calues in testing dataset
+test <- testing(split)
+
+
+# Construct a multiple regression model --------------------------------------
+
+# Response variable: 12 month VAS 
+# Explanatory variables: all 9 biomarker levels at inclusion, age, sex, smoker 
+# and VAS at inclusion
+
+# 2 observations with missing VAS at 12 months deleted.
+
+# Fit the model
+model <- lm(
+  vas_12 ~ il_8 + vegf_a + opg + tgf_beta_1 + il_6 + cxcl9 + cxcl1 + il_18 + 
+    csf_1 + age + sex + smoker + vas_0, 
+  data = train
+  )
+
+# See model summary
+summary(model)
+
+# Evaluate the model by checking assumptions  --------------------------------
+
+# Check assumptions (taken from Thulin (2025)):
+
+# Plot residuals using ggfortify package:
+residual_plots <- autoplot(model, which = 1:6, ncol = 2, label.size = 3)
+residual_plots
+
+# 1. The model is linear in the parameters 
+# Assumption fulfilled: Residuals vs fitted show a straight line.
+
+# 2. The observations are independent
+# We assume they are independent as this is harder to assess visually.
+
+# 3. Homoscedasticity (Random errors have the same variance)
+# Assumption fulfilled: Scale-Location plot shows approximately even spread of residuals
+
+# 4. Normally distributed random errors
+# Assumption fulfilled: Residuals (estimates of random errors) follow a normal 
+# distribution shown in the Normal QQ plot.
+
+
+# Create a table for regression results for training data---------------------
+
+# Create table
+regression_tbl <- tbl_regression(model,
+                                 intercept = TRUE,
+                                 conf.level = 0.95,
+                                 tidy_fun = broom.helpers::tidy_with_broom_or_parameters)
+# See table
+regression_tbl
+
+# Generate predictions and compare to actual test data ------------------------
+predictions <- predict(model, test)
+
+pred_plot <- ggplot(test, aes(x=predictions, y=vas_12)) +
+  geom_point() +
+  theme_classic() +
+  geom_abline(intercept=0, 
+              slope=1,
+              colour = "red") +
+  labs(x='Predicted VAS (1-10)', y='Actual VAS (1-10)')
+
+pred_plot
+
+# Check RMSE
+sqrt(mean((test$vas_12 - predictions)^2))
+
+
+# Create other models with less explanatory variables (not included in report) ----
+
+# Create a model with only variables that have a significant relationship with vas_12
+model_narrow1 <- lm(
+  vas_12 ~ il_8 + opg + tgf_beta_1 + il_6 + vas_0, 
+  data = train
+)
+
+# See model 1 summary
+summary(model_narrow1)
+
+# The p-values of il_8 and tgf_beta_1 having a relationship with vas_12 are not 
+# significant in the second model. 
+
+model_narrow2 <- lm(
+  vas_12 ~ opg + il_6 + vas_0, 
+  data = train
+)
+
+# See model 2 summary
+summary(model_narrow2)
+
+# Discard opg from the model as it is not significant in the last model.
+model_narrow3 <- lm(
+  vas_12 ~ il_6 + vas_0, 
+  data = train
+)
+
+# See model 3 summary
+summary(model_narrow3)
+
+# The highest Adjusted R-squared was reported in the first model including all
+# biomarker levels and all covariates.
+
+# Create results table with model_narrow3 ------------------------------------
+regression3_tbl <- tbl_regression(model_narrow3,
+                                 intercept = TRUE,
+                                 conf.level = 0.95,
+                                 tidy_fun = broom.helpers::tidy_with_broom_or_parameters)
+# See table
+regression3_tbl
+
+# Fit model 3 to test data ---------------------------------------------------
+predictions_model3 <- predict(model_narrow3, test)
+
+pred3_plot <- ggplot(test, aes(x=predictions_model3, y=vas_12)) +
+  geom_point() +
+  theme_classic() +
+  geom_abline(intercept=0, 
+              slope=1,
+              colour = "red") +
+  labs(x='Predicted VAS (1-10)', y='Actual VAS (1-10)')
+
+pred3_plot
+
+# Check RMSE
+sqrt(mean((test$vas_12 - predictions_model3)^2))
+
+# Save results ---------------------------------------------------------------
+
+regression_tbl %>%
+  as_gt() %>%
+  gt::gtsave('figures/regression_table.png')
+
+regression3_tbl %>%
+  as_gt() %>%
+  gt::gtsave('figures/regression_table_small_model.png')
+
+ggsave(residual_plots,
+       filename = "figures/residual_plots.png",
+       device = "png")
+
+ggsave(pred_plot, 
+       filename = "figures/prediction_vs_actual.png",
+       device = "png")
+
+ggsave(pred3_plot,
+       filename = "figures/prediction_vs_actual_smaller_model.png",
+       device = "png")
+
+```
+
+
+
+\newpage
+
+**Appendix 5: Residual Plots for Checking Assumptions**
+
+![]("../figures/residual_plots.png"){height=150%}
+
+\newpage
+
+**Appendix 6: Regression Model Parameters with all biomarkers and covariates as explanatory variables**
+
+![]("../figures/regression_table.png"){width=60%}
+
+\newpage
+
+**Appendix 7: Regression Model Parameters with IL_6 and VAS_0 as Explanatory Variables**
+
+![]("../figures/regression_table_small_model.png"){width=60%}
+
+\newpage
+
+**Appendix 8: Predicted vs. Actual Values for Model with IL_6 and VAS_0 as Explanatory Variables, RMSE = 3.26**
+
+![]("../figures/prediction_vs_actual_smaller_model.png")
 
 
 
